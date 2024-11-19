@@ -1,5 +1,18 @@
+import { ApiListResponse, ApiPostMethods } from "../components/base/api";
+
 // Отдельный тип для способа оплаты
-export type Payment = "online" | "cash" | null;
+export type Payment = "card" | "cash" | null;
+
+//шаблоны в html
+export type Templates = {
+  success: HTMLTemplateElement | null;
+  cardCatalog: HTMLTemplateElement | null;
+  cardPreview: HTMLTemplateElement | null;
+  cardBasket: HTMLTemplateElement | null;
+  basket: HTMLTemplateElement | null;
+  order: HTMLTemplateElement | null;
+  contacts: HTMLTemplateElement | null;
+};
 
 
 //данные товара
@@ -18,6 +31,8 @@ export interface IOrder {
   address: string;
   email: string;
   phone: string;
+  total: number;
+  items: string[];
 }
 
 //данные корзины
@@ -39,11 +54,9 @@ export interface IOrderStatus {
 
 //интерфейс для апи
 export interface IApi {
-	getProducts: () => Promise<IProduct[]>;
+  baseUrl: string;
+  get<T>(uri: string): Promise<T>;
+  post<T>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
+	getProducts: () => Promise<ApiListResponse<IProduct>>;
 	orderProducts(order: IOrder): Promise<IOrderStatus>;
-}
-
-// Тип для ошибки валидации при заполнении заказа
-export interface IErrorMessage {
-  message: string;
 }

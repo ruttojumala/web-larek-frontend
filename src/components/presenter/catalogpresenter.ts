@@ -1,32 +1,36 @@
+import { IProduct } from "../../types";
 import { ProductModel } from "../model/productmodel";
 import { CatalogView } from "../view/catalogview";
+import { ProductView } from "../view/productview";
 
 export class CatalogPresenter {
   private productModel: ProductModel;
   private catalogView: CatalogView;
+  private productView: ProductView;
 
-  constructor(productModel: ProductModel, catalogView: CatalogView) {
+  constructor(
+    productModel: ProductModel,
+    catalogView: CatalogView,
+    productView: ProductView
+  ) {
     this.productModel = productModel;
     this.catalogView = catalogView;
+    this.productView = productView;
   }
 
-  initialize(): void {
-    // Получение товаров из модели и передача их в представление для отображения
-    const products = this.productModel.getAllProducts();
+  //Инициализирует каталог, отображая список продуктов и добавляя обработчики.
+  initialize(products: IProduct[]): void {
     this.catalogView.renderCatalog(products);
-
-    // Связываем обработчик открытия карточки товара
-    this.catalogView.bindOpenProductModal(this.handleOpenProductModal.bind(this));
+    this.catalogView.setProductClickHandler(this.handleOpenProductModal.bind(this));
   }
 
-  handleOpenProductModal(productId: string): void {
+  // Открывает модальное окно с деталями выбранного продукта.
+  private handleOpenProductModal(productId: string): void {
     const product = this.productModel.getProductById(productId);
     if (product) {
-      // Логика открытия модального окна с детальной информацией о продукте
-      console.log("Opening product modal for:", product);
-      // Здесь можно добавить вызов метода представления для отображения модального окна
+      this.productView.renderProductDetails(product);
     } else {
-      console.error('Product with id ${productId} not found');
+      console.error('Товар не найден:', productId);
     }
   }
 }
